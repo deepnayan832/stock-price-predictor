@@ -85,8 +85,8 @@
         <h1 id="hero-title">Explore prices.<br><span>Test predictions.</span></h1>
         <p class="lead">A Python machine-learning project that compares Linear Regression and Random Forest on historical stock prices, with time-aware evaluation instead of random train/test splits.</p>
         <div class="actions">
-          <a class="btn primary" href="https://github.com/deepnayan832/stock-price-predictor">View source code <span aria-hidden="true">↗</span></a>
-          <a class="btn" href="#run">Run the dashboard ↓</a>
+          <a class="btn primary" href="https://share.streamlit.io/deploy?repository=deepnayan832%2Fstock-price-predictor&branch=main&mainModule=app.py">Deploy online app <span aria-hidden="true">↗</span></a>
+          <a class="btn" href="https://github.com/deepnayan832/stock-price-predictor">View source code ↗</a>
         </div>
         <p class="fine">Built with Python · scikit-learn · yfinance · Streamlit</p>
       </div>
@@ -146,25 +146,38 @@
 
     <section id="run">
       <div class="sectionhead">
-        <h2>Run the interactive dashboard</h2>
-        <p class="sub">The Streamlit model runs in a Python environment. GitHub Pages hosts this project information page; it does not execute the Python forecasting app.</p>
+        <h2>Use the predictor online</h2>
+        <p class="sub">Deploy the existing Python app to Streamlit Community Cloud. After the one-time deployment, the app runs in the cloud and visitors can use it from a browser without installing Python locally.</p>
       </div>
       <div class="run">
         <div class="runbox">
-          <h3>1. Install dependencies</h3>
-          <p class="sub">From a terminal in the cloned repository:</p>
-          <pre id="install-command">python -m venv .venv
-python -m pip install -r requirements.txt</pre>
-          <button class="copy" data-copy="install-command" type="button">Copy install commands</button>
+          <h3>1. Deploy to Streamlit</h3>
+          <p class="sub">Sign in with GitHub, review the repository settings, and deploy <code>app.py</code> from the <code>main</code> branch.</p>
+          <div class="actions"><a class="btn primary" href="https://share.streamlit.io/deploy?repository=deepnayan832%2Fstock-price-predictor&branch=main&mainModule=app.py">Open one-click deploy ↗</a></div>
+          <p class="fine">First deployment requires your own Streamlit/GitHub authorization. Choose a public app if you want others to use it.</p>
         </div>
         <div class="runbox">
-          <h3>2. Start Streamlit</h3>
-          <p class="sub">Activate your environment first if you're using one.</p>
-          <pre id="run-command">python -m streamlit run app.py</pre>
-          <button class="copy" data-copy="run-command" type="button">Copy run command</button>
-          <div class="note"><strong>Important:</strong> Educational use only. Stock prices are noisy, holdout metrics don't guarantee future performance, and this project is not financial advice.</div>
+          <h3>2. What the online app does</h3>
+          <p class="sub">Users enter a Yahoo Finance ticker, choose 1–10 years of daily history, and run an online forecast. The app compares Linear Regression and Random Forest with a chronological test set.</p>
+          <div class="note"><strong>Data timing:</strong> This model uses daily adjusted closes, not a guaranteed real-time exchange feed. Yahoo Finance availability and delays may vary. Forecasts are estimates, not buy/sell signals.</div>
         </div>
       </div>
+      <details style="margin-top:18px">
+        <summary style="cursor:pointer;color:var(--muted)">Want to run it locally instead?</summary>
+        <div class="run" style="margin-top:14px">
+          <div class="runbox">
+            <h3>Install dependencies</h3>
+            <pre id="install-command">python -m venv .venv
+python -m pip install -r requirements.txt</pre>
+            <button class="copy" data-copy="install-command" type="button">Copy install commands</button>
+          </div>
+          <div class="runbox">
+            <h3>Start Streamlit</h3>
+            <pre id="run-command">python -m streamlit run app.py</pre>
+            <button class="copy" data-copy="run-command" type="button">Copy run command</button>
+          </div>
+        </div>
+      </details>
     </section>
   </main>
 
