@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <meta name="description" content="An educational Python stock price prediction project comparing Linear Regression and Random Forest on historical price data.">
+  <title>Stock Price Predictor | Machine Learning Project</title>
+  <style>
+    :root{color-scheme:dark;--bg:#090e1c;--panel:#10182b;--panel2:#141f36;--text:#f3f6ff;--muted:#a6b2cc;--line:#26334f;--mint:#70f0c0;--blue:#8ca7ff;--amber:#ffd58a}
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(ellipse at 78% 0%,#17294b 0,transparent 36%),var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    a{color:inherit}
+    .wrap{width:min(1120px,calc(100% - 40px));margin:auto}
+    nav{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:23px 0;border-bottom:1px solid #ffffff12}
+    .brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:750;letter-spacing:-.02em}
+    .logo{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:#08131b;background:linear-gradient(135deg,var(--mint),#8faaff);font-weight:900}
+    .navlinks{display:flex;gap:22px;align-items:center;color:var(--muted);font-size:14px}
+    .navlinks a{text-decoration:none}.navlinks a:hover{color:var(--text)}
+    .pill{display:inline-flex;align-items:center;gap:8px;border:1px solid #70f0c055;background:#70f0c012;color:var(--mint);border-radius:999px;padding:7px 12px;font-size:12px;font-weight:750;letter-spacing:.07em;text-transform:uppercase}
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--mint);box-shadow:0 0 12px #70f0c0}
+    .hero{padding:78px 0 60px;display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+    h1{font-size:clamp(42px,6vw,68px);line-height:1.04;letter-spacing:-.055em;margin:20px 0 22px;max-width:680px}
+    h1 span{color:var(--mint)}
+    .lead{font-size:18px;color:var(--muted);max-width:610px}
+    .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;border-radius:12px;padding:12px 17px;font-weight:750;border:1px solid var(--line);transition:transform .18s ease,border-color .18s ease}
+    .btn:hover{transform:translateY(-2px);border-color:#7185ae}
+    .btn.primary{background:var(--mint);border-color:var(--mint);color:#07151b}
+    .fine{font-size:12px;color:var(--muted);margin-top:14px}
+    .visual{padding:22px;border:1px solid #ffffff16;border-radius:24px;background:linear-gradient(160deg,#15213b,#0c1324 75%);box-shadow:0 28px 100px #0004}
+    .visualtop{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:20px}
+    .eyebrow{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;font-weight:750}
+    .tag{border:1px solid var(--line);border-radius:8px;color:var(--blue);font-size:11px;padding:5px 8px;font-weight:750}
+    .chart{width:100%;height:auto;display:block;overflow:visible}
+    .visualnote{font-size:11px;color:#92a0bd;margin:12px 0 0}
+    .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:17px}
+    .metric{padding:12px;border-radius:12px;background:#ffffff06;border:1px solid #ffffff0d}
+    .metric b{display:block;font-size:17px;letter-spacing:-.02em}
+    .metric span{font-size:11px;color:var(--muted)}
+    section{padding:54px 0}
+    .sectionhead{max-width:670px;margin-bottom:26px}
+    h2{font-size:clamp(28px,4vw,40px);letter-spacing:-.04em;line-height:1.15;margin:0 0 12px}
+    .sub{color:var(--muted);margin:0}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .card{padding:23px;border-radius:18px;background:linear-gradient(160deg,var(--panel),#0d1424);border:1px solid #ffffff12}
+    .icon{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#70f0c013;color:var(--mint);font-size:20px;margin-bottom:17px}
+    h3{font-size:18px;margin:0 0 8px;letter-spacing:-.02em}
+    .card p{color:var(--muted);font-size:14px;margin:0}
+    .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .step{position:relative;padding:19px;border:1px solid var(--line);background:#ffffff04;border-radius:15px}
+    .num{color:var(--mint);font-size:12px;font-weight:800;letter-spacing:.09em}
+    .step h3{margin-top:10px;font-size:16px}
+    .step p{font-size:13px;color:var(--muted);margin:0}
+    .run{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}
+    .runbox{border:1px solid var(--line);border-radius:18px;background:var(--panel);padding:23px}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#070b15;border:1px solid #ffffff12;padding:17px;border-radius:12px;color:#c7f9e7;font-size:13px;line-height:1.8}
+    .copy{border:1px solid #40506f;background:#17223a;color:var(--text);padding:7px 11px;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px}
+    .note{margin-top:18px;border-left:3px solid var(--amber);padding:13px 15px;background:#ffd58a0c;color:#c9d1e3;border-radius:0 10px 10px 0;font-size:13px}
+    footer{margin-top:40px;border-top:1px solid #ffffff12;padding:24px 0 34px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+    footer a{color:var(--mint)}
+    @media(max-width:800px){.hero{grid-template-columns:1fr;gap:36px;padding-top:55px}.grid3{grid-template-columns:1fr}.flow{grid-template-columns:repeat(2,1fr)}.run{grid-template-columns:1fr}.navlinks{gap:12px}.navlinks a:not(.repo){display:none}}
+    @media(max-width:440px){.wrap{width:min(100% - 28px,1120px)}.metrics{grid-template-columns:1fr}.visual{padding:15px}.flow{grid-template-columns:1fr}.navlinks{display:none}.hero{padding-top:42px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important}}
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <nav aria-label="Main navigation">
+      <a class="brand" href="#top"><span class="logo">SP</span><span>Stock Price Predictor</span></a>
+      <div class="navlinks">
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#run">Run locally</a>
+        <a class="repo" href="https://github.com/deepnayan832/stock-price-predictor">GitHub ↗</a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="top" class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <span class="pill"><span class="dot"></span> Open-source ML project</span>
+        <h1 id="hero-title">Explore prices.<br><span>Test predictions.</span></h1>
+        <p class="lead">A Python machine-learning project that compares Linear Regression and Random Forest on historical stock prices, with time-aware evaluation instead of random train/test splits.</p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/deepnayan832/stock-price-predictor">View source code <span aria-hidden="true">↗</span></a>
+          <a class="btn" href="#run">Run the dashboard ↓</a>
+        </div>
+        <p class="fine">Built with Python · scikit-learn · yfinance · Streamlit</p>
+      </div>
+
+      <div class="visual" aria-label="Illustrative chart showing a historical price line and model estimate">
+        <div class="visualtop">
+          <div><div class="eyebrow">Model evaluation</div><strong>Compare before you trust</strong></div>
+          <span class="tag">EDUCATIONAL DEMO</span>
+        </div>
+        <svg class="chart" viewBox="0 0 520 245" role="img" aria-label="Illustrative, not live, price chart">
+          <defs>
+            <linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#70f0c0" stop-opacity=".28"/><stop offset="1" stop-color="#70f0c0" stop-opacity="0"/></linearGradient>
+          </defs>
+          <g stroke="#ffffff12" stroke-width="1">
+            <path d="M20 32H500 M20 78H500 M20 124H500 M20 170H500 M20 216H500"/>
+            <path d="M20 20V220 M116 20V220 M212 20V220 M308 20V220 M404 20V220 M500 20V220"/>
+          </g>
+          <path d="M20 184 L54 171 L82 181 L111 149 L142 160 L174 121 L204 136 L234 104 L264 119 L296 88 L326 99 L357 70 L388 91 L416 53 L448 68 L478 38 L500 48 L500 220 L20 220Z" fill="url(#area)"/>
+          <polyline points="20,184 54,171 82,181 111,149 142,160 174,121 204,136 234,104 264,119 296,88 326,99 357,70 388,91 416,53 448,68 478,38 500,48" fill="none" stroke="#70f0c0" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="20,190 54,179 82,174 111,160 142,151 174,140 204,128 234,119 264,108 296,99 326,91 357,81 388,73 416,62 448,55 478,48 500,42" fill="none" stroke="#8ca7ff" stroke-width="2.5" stroke-dasharray="6 6" stroke-linecap="round"/>
+          <circle cx="500" cy="48" r="5" fill="#70f0c0" stroke="#09101d" stroke-width="2"/>
+          <g font-size="10" fill="#92a0bd"><text x="20" y="238">Earlier sessions</text><text x="500" y="238" text-anchor="end">Later sessions</text></g>
+        </svg>
+        <div class="metrics">
+          <div class="metric"><b>MAE</b><span>Average absolute error</span></div>
+          <div class="metric"><b>RMSE</b><span>Penalizes large errors</span></div>
+          <div class="metric"><b>R²</b><span>Relative fit score</span></div>
+        </div>
+        <p class="visualnote">Illustrative graphic only — no live market data or forecast is shown on this static page.</p>
+      </div>
+    </section>
+
+    <section id="features">
+      <div class="sectionhead">
+        <h2>Built to learn, measure, and compare.</h2>
+        <p class="sub">The goal is not to promise a winning trade. It's to make the modeling process inspectable and compare predictions against a simple baseline.</p>
+      </div>
+      <div class="grid3">
+        <article class="card"><div class="icon" aria-hidden="true">⌁</div><h3>Historical features</h3><p>Lagged closes, rolling averages and volatility, plus 5-, 10-, and 20-session momentum features.</p></article>
+        <article class="card"><div class="icon" aria-hidden="true">⇄</div><h3>Two models + baseline</h3><p>Compare Linear Regression and Random Forest against a previous-close baseline on later observations.</p></article>
+        <article class="card"><div class="icon" aria-hidden="true">▥</div><h3>Time-aware evaluation</h3><p>Chronological train/test split and MAE, RMSE, R², directional accuracy, and actual-vs-predicted chart.</p></article>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <div class="sectionhead">
+        <h2>How the model works</h2>
+        <p class="sub">A clear, repeatable pipeline from price history to a one-session forecast.</p>
+      </div>
+      <div class="flow">
+        <div class="step"><div class="num">STEP 01</div><h3>Get price history</h3><p>Download adjusted daily closing prices through yfinance.</p></div>
+        <div class="step"><div class="num">STEP 02</div><h3>Build features</h3><p>Construct lagged and rolling features using prior observations.</p></div>
+        <div class="step"><div class="num">STEP 03</div><h3>Test honestly</h3><p>Train on earlier dates and evaluate on later dates, without shuffling.</p></div>
+        <div class="step"><div class="num">STEP 04</div><h3>Compare errors</h3><p>Measure model errors and compare them with a naive baseline.</p></div>
+      </div>
+    </section>
+
+    <section id="run">
+      <div class="sectionhead">
+        <h2>Run the interactive dashboard</h2>
+        <p class="sub">The Streamlit model runs in a Python environment. GitHub Pages hosts this project information page; it does not execute the Python forecasting app.</p>
+      </div>
+      <div class="run">
+        <div class="runbox">
+          <h3>1. Install dependencies</h3>
+          <p class="sub">From a terminal in the cloned repository:</p>
+          <pre id="install-command">python -m venv .venv
+python -m pip install -r requirements.txt</pre>
+          <button class="copy" data-copy="install-command" type="button">Copy install commands</button>
+        </div>
+        <div class="runbox">
+          <h3>2. Start Streamlit</h3>
+          <p class="sub">Activate your environment first if you're using one.</p>
+          <pre id="run-command">python -m streamlit run app.py</pre>
+          <button class="copy" data-copy="run-command" type="button">Copy run command</button>
+          <div class="note"><strong>Important:</strong> Educational use only. Stock prices are noisy, holdout metrics don't guarantee future performance, and this project is not financial advice.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap">
+    <span>© 2026 Stock Price Predictor · Open-source educational project</span>
+    <span><a href="https://github.com/deepnayan832/stock-price-predictor">Repository</a> · <a href="https://github.com/deepnayan832/stock-price-predictor/blob/main/README.md">Documentation</a></span>
+  </footer>
+  <script>
+    document.querySelectorAll("button[data-copy]").forEach(function(button){
+      button.addEventListener("click", async function(){
+        var target = document.getElementById(button.getAttribute("data-copy"));
+        if (!target) return;
+        try {
+          await navigator.clipboard.writeText(target.textContent);
+          var original = button.textContent;
+          button.textContent = "Copied!";
+          window.setTimeout(function(){ button.textContent = original; }, 1400);
+        } catch (error) {
+          button.textContent = "Select and copy the commands";
+        }
+      });
+    });
+  </script>
+</body>
+</html>
