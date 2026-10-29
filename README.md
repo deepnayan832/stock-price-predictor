@@ -109,7 +109,9 @@ stock-price-predictor/
 │   ├── pages.yml
 │   └── tests.yml
 ├── .gitignore
+├── .nojekyll
 ├── CONTRIBUTING.md
+├── index.html
 ├── LICENSE
 └── README.md
 ```
