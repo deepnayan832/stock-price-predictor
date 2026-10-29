@@ -8,9 +8,10 @@ A beginner-friendly Python project that downloads daily historical stock prices,
 
 - **GitHub Repository:** https://github.com/deepnayan832/stock-price-predictor
 - **Project homepage (GitHub Pages):** https://deepnayan832.github.io/stock-price-predictor/
+- **Live Streamlit app:** https://deepnayan832-stock-price-predictor.streamlit.app/
 - **Deploy the interactive online app:** [Open Streamlit Community Cloud deployment](https://share.streamlit.io/deploy?repository=deepnayan832%2Fstock-price-predictor&branch=main&mainModule=app.py)
 
-> **Interactive deployment:** GitHub Pages serves the static project homepage only. The Python prediction app runs separately on Streamlit Community Cloud. Use the one-click deployment link above, sign in with GitHub, select `deepnayan832/stock-price-predictor`, branch `main`, and main file `app.py`, then click **Deploy**. Once deployed, Streamlit gives you a live `.streamlit.app` URL. GitHub Pages cannot run Python server-side code.
+> **Interactive deployment:** GitHub Pages serves the static project homepage only. The Python prediction app runs separately on Streamlit Community Cloud. Open the live app above to use it online, or use the one-click deployment link if you want to create your own deployment. GitHub Pages cannot run Python server-side code.
 
 ## Features
 
@@ -23,9 +24,9 @@ A beginner-friendly Python project that downloads daily historical stock prices,
 - Next-session point forecast and an actual-vs-predicted chart.
 - Small unit tests for feature construction and model workflow.
 
-## Deploy the interactive app online
+## Deploy the interactive app yourself
 
-1. Open the [one-click Streamlit deployment link](https://share.streamlit.io/deploy?repository=deepnayan832%2Fstock-price-predictor&branch=main&mainModule=app.py).
+1. Open the [one-click Streamlit deployment link](https://share.streamlit.io/deploy?repository=deepnayan832%2Fstock-price-predictor&branch=main&mainModule=app.py) if you want to create your own deployment. The published app is available at [deepnayan832-stock-price-predictor.streamlit.app](https://deepnayan832-stock-price-predictor.streamlit.app/).
 2. Sign in to Streamlit Community Cloud with GitHub and authorize access to this public repository.
 3. Confirm repository `deepnayan832/stock-price-predictor`, branch `main`, and main file `app.py`.
 4. Click **Deploy**. When the app finishes starting, copy the generated `.streamlit.app` URL and add it to the GitHub repository's **About → Website** field or to this README.
