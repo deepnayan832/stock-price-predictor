@@ -9,6 +9,7 @@ import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from sklearn.model_selection import TimeSeriesSplit
 
 LAGS = (1, 2, 3, 5, 10, 20)
 WINDOWS = (5, 10, 20)
@@ -33,10 +34,9 @@ def clean_close_series(close: pd.Series) -> pd.Series:
     """Return a sorted, numeric Close series with invalid rows removed."""
     if not isinstance(close, pd.Series):
         close = pd.Series(close)
-    result = pd.to_numeric(close, errors="coerce").dropna().astype(float).sort_index()
-    result = result[~result.index.duplicated(keep="last")]
-    if (result <= 0).any():
-        result = result[result > 0]
+    result = pd.to_numeric(close, errors="coerce").replace([np.inf, -np.inf], np.nan).dropna().astype(float)
+    result = result.loc[~result.index.duplicated(keep="last")].sort_index()
+    result = result[result > 0]
     if len(result) < 60:
         raise ValueError("At least 60 valid daily closing prices are needed; 1–5 years of history is recommended.")
     return result
@@ -81,20 +81,16 @@ def make_next_feature_row(close: pd.Series) -> pd.DataFrame:
 
 
 def evaluate_models(close: pd.Series, test_fraction: float = 0.2) -> EvaluationResult:
-    """Evaluate models on the most recent chronological holdout; do not shuffle time."""
+    """Evaluate models across expanding chronological windows; do not shuffle time."""
     close = clean_close_series(close)
     data = build_supervised_data(close)
     if not 0.10 <= test_fraction <= 0.35:
         raise ValueError("test_fraction must be between 0.10 and 0.35.")
 
-    split = int(len(data) * (1.0 - test_fraction))
-    if split < 40 or len(data) - split < 10:
-        raise ValueError("Not enough rows for a reliable chronological train/test split.")
-
-    x_train = data.iloc[:split][list(FEATURE_COLUMNS)]
-    y_train = data.iloc[:split]["target"]
-    x_test = data.iloc[split:][list(FEATURE_COLUMNS)]
-    y_test = data.iloc[split:]["target"]
+    split_count = 3
+    test_size = max(4, int(np.ceil(len(data) * test_fraction / split_count)))
+    if len(data) - test_size * split_count < 40:
+        raise ValueError("Not enough rows for a reliable expanding walk-forward evaluation.")
 
     models: dict[str, Any] = {
         "Linear Regression": LinearRegression(),
@@ -105,19 +101,33 @@ def evaluate_models(close: pd.Series, test_fraction: float = 0.2) -> EvaluationR
             n_jobs=-1,
         ),
     }
-    rows: list[dict[str, float | str]] = []
-    test_predictions = pd.DataFrame(index=y_test.index)
-    test_predictions["Actual"] = y_test
-    # Align prior-day closes from the full series so the first holdout day has a baseline too.
-    previous_close = close.shift(1).reindex(y_test.index)
-    test_predictions["Previous Close Baseline"] = previous_close.to_numpy()
+    prediction_frames: list[pd.DataFrame] = []
+    splitter = TimeSeriesSplit(n_splits=split_count, test_size=test_size)
+    for train_indices, test_indices in splitter.split(data):
+        train = data.iloc[train_indices]
+        test = data.iloc[test_indices]
+        y_test = test["target"]
+        previous_close = close.shift(1).reindex(y_test.index)
+        fold_predictions = pd.DataFrame(index=y_test.index)
+        fold_predictions["Actual"] = y_test
+        fold_predictions["Previous Close Baseline"] = previous_close.to_numpy()
 
-    for name, model in models.items():
-        model.fit(x_train, y_train)
-        prediction = np.asarray(model.predict(x_test), dtype=float)
-        test_predictions[name] = prediction
-        true_direction = np.sign(y_test.to_numpy() - previous_close.to_numpy())
-        predicted_direction = np.sign(prediction - previous_close.to_numpy())
+        for name, model in models.items():
+            model.fit(train[list(FEATURE_COLUMNS)], train["target"])
+            fold_predictions[name] = np.asarray(
+                model.predict(test[list(FEATURE_COLUMNS)]), dtype=float
+            )
+
+        prediction_frames.append(fold_predictions)
+
+    test_predictions = pd.concat(prediction_frames).sort_index()
+    rows: list[dict[str, float | str]] = []
+    y_test = test_predictions["Actual"].to_numpy(dtype=float)
+    previous_close = test_predictions["Previous Close Baseline"].to_numpy(dtype=float)
+    for name in models:
+        prediction = test_predictions[name].to_numpy(dtype=float)
+        true_direction = np.sign(y_test - previous_close)
+        predicted_direction = np.sign(prediction - previous_close)
         valid_direction = np.isfinite(true_direction) & np.isfinite(predicted_direction)
         directional_accuracy = (
             float(np.mean(true_direction[valid_direction] == predicted_direction[valid_direction]) * 100.0)
@@ -135,8 +145,8 @@ def evaluate_models(close: pd.Series, test_fraction: float = 0.2) -> EvaluationR
         )
 
     # Include the persistence forecast (tomorrow equals the latest known close) as a baseline.
-    baseline_prediction = previous_close.to_numpy(dtype=float)
-    baseline_true = y_test.to_numpy(dtype=float)
+    baseline_prediction = previous_close
+    baseline_true = y_test
     rows.append(
         {
             "Model": "Previous Close Baseline",
@@ -155,7 +165,7 @@ def evaluate_models(close: pd.Series, test_fraction: float = 0.2) -> EvaluationR
         test_predictions=test_predictions,
         best_model_name=best_model_name,
         fitted_test_models=models,
-        split_date=pd.Timestamp(y_test.index[0]),
+        split_date=pd.Timestamp(test_predictions.index[0]),
     )
 
 

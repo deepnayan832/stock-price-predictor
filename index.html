@@ -83,9 +83,9 @@
       <div>
         <span class="pill"><span class="dot"></span> Open-source ML project</span>
         <h1 id="hero-title">Explore prices.<br><span>Test predictions.</span></h1>
-        <p class="lead">A Python machine-learning project that compares Linear Regression and Random Forest on historical stock prices, with time-aware evaluation instead of random train/test splits.</p>
+        <p class="lead">A Python machine-learning project that compares Linear Regression and Random Forest on historical stock prices, with expanding walk-forward evaluation instead of random train/test splits.</p>
         <div class="actions">
-          <a class="btn primary" href="https://share.streamlit.io/deploy?repository=deepnayan832%2Fstock-price-predictor&branch=main&mainModule=app.py">Deploy online app <span aria-hidden="true">↗</span></a>
+          <a class="btn primary" href="https://stock-price-predictor-jkqbqgjjy8emsxw4vkhtta.streamlit.app/">Launch live app <span aria-hidden="true">↗</span></a>
           <a class="btn" href="https://github.com/deepnayan832/stock-price-predictor">View source code ↗</a>
         </div>
         <p class="fine">Built with Python · scikit-learn · yfinance · Streamlit</p>
@@ -127,7 +127,7 @@
       <div class="grid3">
         <article class="card"><div class="icon" aria-hidden="true">⌁</div><h3>Historical features</h3><p>Lagged closes, rolling averages and volatility, plus 5-, 10-, and 20-session momentum features.</p></article>
         <article class="card"><div class="icon" aria-hidden="true">⇄</div><h3>Two models + baseline</h3><p>Compare Linear Regression and Random Forest against a previous-close baseline on later observations.</p></article>
-        <article class="card"><div class="icon" aria-hidden="true">▥</div><h3>Time-aware evaluation</h3><p>Chronological train/test split and MAE, RMSE, R², directional accuracy, and actual-vs-predicted chart.</p></article>
+        <article class="card"><div class="icon" aria-hidden="true">▥</div><h3>Time-aware evaluation</h3><p>Three expanding chronological windows with MAE, RMSE, R², directional accuracy, and an actual-vs-predicted chart.</p></article>
       </div>
     </section>
 
@@ -139,7 +139,7 @@
       <div class="flow">
         <div class="step"><div class="num">STEP 01</div><h3>Get price history</h3><p>Download adjusted daily closing prices through yfinance.</p></div>
         <div class="step"><div class="num">STEP 02</div><h3>Build features</h3><p>Construct lagged and rolling features using prior observations.</p></div>
-        <div class="step"><div class="num">STEP 03</div><h3>Test honestly</h3><p>Train on earlier dates and evaluate on later dates, without shuffling.</p></div>
+        <div class="step"><div class="num">STEP 03</div><h3>Test honestly</h3><p>Expand the training history and evaluate on later dates, without shuffling.</p></div>
         <div class="step"><div class="num">STEP 04</div><h3>Compare errors</h3><p>Measure model errors and compare them with a naive baseline.</p></div>
       </div>
     </section>
@@ -153,13 +153,16 @@
         <div class="runbox">
           <h3>1. Deploy to Streamlit</h3>
           <p class="sub">Sign in with GitHub, review the repository settings, and deploy <code>app.py</code> from the <code>main</code> branch.</p>
-          <div class="actions"><a class="btn primary" href="https://share.streamlit.io/deploy?repository=deepnayan832%2Fstock-price-predictor&branch=main&mainModule=app.py">Open one-click deploy ↗</a></div>
+          <div class="actions">
+            <a class="btn primary" href="https://stock-price-predictor-jkqbqgjjy8emsxw4vkhtta.streamlit.app/">Open live app ↗</a>
+            <a class="btn" href="https://share.streamlit.io/deploy?repository=deepnayan832%2Fstock-price-predictor&amp;branch=main&amp;mainModule=app.py">Deploy your own copy ↗</a>
+          </div>
           <p class="fine">First deployment requires your own Streamlit/GitHub authorization. Choose a public app if you want others to use it.</p>
         </div>
         <div class="runbox">
           <h3>2. What the online app does</h3>
-          <p class="sub">Users enter a Yahoo Finance ticker, choose 1–10 years of daily history, and run an online forecast. The app compares Linear Regression and Random Forest with a chronological test set.</p>
-          <div class="note"><strong>Data timing:</strong> This model uses daily adjusted closes, not a guaranteed real-time exchange feed. Yahoo Finance availability and delays may vary. Forecasts are estimates, not buy/sell signals.</div>
+          <p class="sub">Users enter a Yahoo Finance ticker, choose 1, 2, 5, or 10 years of daily history, and run an online forecast. The app compares Linear Regression and Random Forest with a previous-close baseline across expanding chronological test windows.</p>
+          <div class="note"><strong>Data timing:</strong> The app uses completed daily adjusted closes, omits the current session until its regular close, and caches data for up to one hour. Yahoo Finance availability and delays may vary; this is not a real-time exchange feed. Forecasts are estimates, not buy/sell signals.</div>
         </div>
       </div>
       <details style="margin-top:18px">
