@@ -9,7 +9,7 @@ A beginner-friendly Python project that downloads daily historical stock prices,
 - **GitHub Repository:** https://github.com/deepnayan832/stock-price-predictor
 - **GitHub Pages URL:** https://deepnayan832.github.io/stock-price-predictor/
 
-> **Deployment note:** The interactive app currently uses Streamlit. GitHub Pages serves static websites and cannot run the Python/Streamlit app itself. The Pages URL will work as a project website only after a compatible static frontend is published. To host the existing interactive app, use a Streamlit-compatible hosting service.
+> **Deployment note:** `index.html` is the static project homepage, and `.github/workflows/pages.yml` deploys it with GitHub Actions. One-time setup may be required: open **Settings → Pages → Build and deployment → Source**, select **GitHub Actions**, then open the Actions tab and check the **Deploy GitHub Pages** workflow. GitHub Pages cannot run the Python/Streamlit forecasting app itself; host that app separately on a Streamlit-compatible service.
 
 ## Features
 
