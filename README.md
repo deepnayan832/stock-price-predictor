@@ -4,6 +4,13 @@ A beginner-friendly Python project that downloads daily historical stock prices,
 
 > **Important:** This is an educational baseline, not a reliable trading signal. Stock prices are noisy; past performance and model metrics do not guarantee future results.
 
+## 🌐 Project Links
+
+- **GitHub Repository:** https://github.com/deepnayan832/stock-price-predictor
+- **GitHub Pages URL:** https://deepnayan832.github.io/stock-price-predictor/
+
+> **Deployment note:** The interactive app currently uses Streamlit. GitHub Pages serves static websites and cannot run the Python/Streamlit app itself. The Pages URL will work as a project website only after a compatible static frontend is published. To host the existing interactive app, use a Streamlit-compatible hosting service.
+
 ## Features
 
 - Historical adjusted close from Yahoo Finance using `yfinance`.
@@ -26,7 +33,7 @@ Open PowerShell in this project folder and run:
 
 ```powershell
 py -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.\\.venv\\Scripts\\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
@@ -34,8 +41,8 @@ pip install -r requirements.txt
 If PowerShell blocks activation, you can skip activation and use the environment's executable directly:
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m streamlit run app.py
+.\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt
+.\\.venv\\Scripts\\python.exe -m streamlit run app.py
 ```
 
 ## 3. Run the dashboard
