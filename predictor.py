@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from os import cpu_count
 from typing import Any
 
 import numpy as np
@@ -13,6 +14,8 @@ from sklearn.model_selection import TimeSeriesSplit
 
 LAGS = (1, 2, 3, 5, 10, 20)
 WINDOWS = (5, 10, 20)
+# Avoid spawning a worker per logical core for this small interactive dataset.
+RANDOM_FOREST_N_JOBS = max(1, min(4, (cpu_count() or 1) - 1))
 FEATURE_COLUMNS = (
     tuple(f"lag_{lag}" for lag in LAGS)
     + tuple(f"mean_{window}" for window in WINDOWS)
@@ -98,7 +101,7 @@ def evaluate_models(close: pd.Series, test_fraction: float = 0.2) -> EvaluationR
             n_estimators=300,
             min_samples_leaf=3,
             random_state=42,
-            n_jobs=-1,
+            n_jobs=RANDOM_FOREST_N_JOBS,
         ),
     }
     prediction_frames: list[pd.DataFrame] = []
@@ -180,7 +183,7 @@ def fit_and_predict_next(close: pd.Series, model_name: str) -> float:
             n_estimators=300,
             min_samples_leaf=3,
             random_state=42,
-            n_jobs=-1,
+            n_jobs=RANDOM_FOREST_N_JOBS,
         )
     else:
         raise ValueError(f"Unsupported model: {model_name}")

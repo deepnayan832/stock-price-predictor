@@ -4,15 +4,108 @@ import logging
 from datetime import datetime, timezone
 
 import pandas as pd
-import plotly.graph_objects as go
 import streamlit as st
 
 from market_data import HISTORICAL_PERIODS, fetch_daily_history, validate_ticker_symbol
-from predictor import evaluate_models, fit_and_predict_next
 
 logger = logging.getLogger(__name__)
 
 st.set_page_config(page_title="Stock Price Predictor", page_icon="📈", layout="wide")
+st.markdown(
+    """
+    <style>
+    :root {
+      color-scheme: dark;
+      --stock-accent: #6ce9c2;
+      --stock-line: rgba(148, 170, 205, .18);
+      --stock-surface: rgba(17, 27, 45, .9);
+    }
+    .stApp {
+      background:
+        radial-gradient(ellipse at 78% 0%, rgba(79, 119, 195, .17), transparent 34rem),
+        radial-gradient(ellipse at 4% 28%, rgba(87, 224, 187, .08), transparent 25rem),
+        #0a0f1b;
+    }
+    [data-testid="stAppViewContainer"] { background: transparent; }
+    [data-testid="stHeader"] {
+      background: rgba(8, 13, 23, .72);
+      backdrop-filter: blur(14px);
+    }
+    [data-testid="stSidebar"] {
+      background: linear-gradient(180deg, #101a2c, #0b1321);
+      border-right: 1px solid var(--stock-line);
+    }
+    .block-container {
+      max-width: 1480px;
+      padding-top: 2.5rem;
+      padding-bottom: 3rem;
+    }
+    h1, h2, h3 { letter-spacing: -.035em; }
+    h1 { font-weight: 750; }
+    [data-testid="stCaptionContainer"] { color: #a7b6cd; }
+    [data-testid="stAlert"] {
+      border: 1px solid var(--stock-line);
+      border-radius: 14px;
+      backdrop-filter: blur(14px);
+    }
+    [data-testid="stMetric"] {
+      min-height: 128px;
+      padding: 18px 20px;
+      border: 1px solid var(--stock-line);
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(23, 35, 57, .96), rgba(14, 22, 38, .94));
+      box-shadow: 0 16px 34px rgba(0, 0, 0, .16), inset 0 1px 0 rgba(255, 255, 255, .035);
+    }
+    [data-testid="stMetricLabel"] { color: #a7b6cd; font-weight: 600; }
+    [data-testid="stMetricValue"] { color: #f4f7fc; font-weight: 750; }
+    [data-testid="stPlotlyChart"] {
+      overflow: hidden;
+      border: 1px solid var(--stock-line);
+      border-radius: 18px;
+      background: var(--stock-surface);
+      padding: 8px;
+    }
+    [data-testid="stDataFrame"] {
+      overflow: hidden;
+      border: 1px solid var(--stock-line);
+      border-radius: 14px;
+    }
+    [data-testid="stExpander"] {
+      border: 1px solid var(--stock-line);
+      border-radius: 14px;
+      background: rgba(17, 27, 45, .65);
+    }
+    [data-testid="stFormSubmitButton"] button,
+    .stButton > button {
+      min-height: 44px;
+      border: 1px solid rgba(108, 233, 194, .28);
+      border-radius: 11px;
+      background: linear-gradient(135deg, #6ce9c2, #80d9dc);
+      color: #07151b;
+      font-weight: 750;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+    [data-testid="stFormSubmitButton"] button:hover,
+    .stButton > button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 22px rgba(69, 211, 176, .2);
+    }
+    button:focus-visible, input:focus-visible, [role="combobox"]:focus-visible {
+      outline: 3px solid rgba(108, 233, 194, .55);
+      outline-offset: 2px;
+    }
+    @media (max-width: 768px) {
+      .block-container { padding: 1.4rem 1rem 2rem; }
+      [data-testid="stMetric"] { min-height: auto; padding: 14px 16px; }
+      [data-testid="stPlotlyChart"] { padding: 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 st.title("📈 Stock Price Predictor")
 st.caption("Educational forecasting demo • Historical prices do not guarantee future performance.")
 
@@ -52,6 +145,8 @@ try:
     with st.spinner(f"Downloading daily data and evaluating models for {symbol}…"):
         history, retrieved_at = load_history(symbol, period)
         close = history["Close"].astype(float)
+        from predictor import evaluate_models, fit_and_predict_next
+
         evaluation = evaluate_models(close)
         best_name = evaluation.best_model_name
         next_prediction = fit_and_predict_next(close, best_name)
@@ -96,6 +191,8 @@ else:
 left, right = st.columns([1.55, 1])
 with left:
     st.subheader("Historical adjusted closing price")
+    import plotly.graph_objects as go
+
     fig_history = go.Figure()
     fig_history.add_trace(go.Scatter(x=close.index, y=close.values, mode="lines", name="Adjusted close"))
     fig_history.update_layout(height=420, margin=dict(l=10, r=10, t=15, b=10), xaxis_title="Date", yaxis_title="Price", hovermode="x unified")

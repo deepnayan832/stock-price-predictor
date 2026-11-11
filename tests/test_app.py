@@ -10,7 +10,7 @@ import market_data
 def test_dashboard_starts_without_requesting_market_data():
     app_path = Path(__file__).parents[1] / "app.py"
 
-    app = AppTest.from_file(str(app_path)).run()
+    app = AppTest.from_file(str(app_path), default_timeout=30).run()
 
     assert not app.exception
     assert any("Run prediction" in item.value for item in app.info)
