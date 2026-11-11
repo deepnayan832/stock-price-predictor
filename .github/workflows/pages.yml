@@ -30,6 +30,7 @@ jobs:
           mkdir -p _site
           cp index.html _site/index.html
           cp .nojekyll _site/.nojekyll
+          cp stock-3d-scene.js _site/stock-3d-scene.js
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
